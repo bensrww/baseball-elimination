@@ -5,6 +5,7 @@
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Queue;
 
 public class BaseballElimination {
 
@@ -38,6 +39,15 @@ public class BaseballElimination {
         }
     }
 
+    private int getTeamIndex(String teamName) {
+        for (int iii = 0; iii < _numOfTeams; iii += 1) {
+            if (this._teams[iii] == teamName) {
+                return iii;
+            }
+        }
+        return -1;
+    }
+
     // number of teams
     public int numberOfTeams() {
         return _numOfTeams;
@@ -45,27 +55,31 @@ public class BaseballElimination {
 
     // all teams
     public Iterable<String> teams() {
-        return null;
+        Queue<String> q = new Queue<>();
+        for (String team : this._teams) {
+            q.enqueue(team);
+        }
+        return q;
     }
 
     // number of wins for given team
     public int wins(String team) {
-        return 0;
+        return this._wins[getTeamIndex(team)];
     }
 
     // number of losses for given team
     public int losses(String team) {
-        return 0;
+        return this._loses[getTeamIndex(team)];
     }
 
     // number of remaining games for given team
     public int remaining(String team) {
-        return 0;
+        return this._left[getTeamIndex(team)];
     }
 
     // number of remaining games between team1 and team2
     public int against(String team1, String team2) {
-        return 0;
+        return this._against[getTeamIndex(team1),getTeamIndex(team2)];
     }
 
     // is given team eliminated?
