@@ -4,8 +4,13 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.FlowEdge;
+import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.FordFulkerson;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+
+import java.util.Objects;
 
 public class BaseballElimination {
 
@@ -15,6 +20,8 @@ public class BaseballElimination {
     private int[] _loses;
     private int[] _left;
     private int[][] _against;
+    private FlowNetwork[] _network;
+    private FordFulkerson[] _fordFulkerson;
 
     // create a baseball division from given filename in format specified below
     public BaseballElimination(
@@ -37,11 +44,31 @@ public class BaseballElimination {
                 _against[teamId][iii] = in.readInt();
             }
         }
+
+        for (int teamId = 0; teamId < _numOfTeams; teamId += 1) {
+            // construct network without team[teamId]
+            FlowNetwork flowNetwork = new FlowNetwork(
+                    2 + _numOfTeams - 1 + (_numOfTeams - 1 + _numOfTeams - 2) / 2);
+            // 0 is source, {1 --- (_numOfTeams - 1 + _numOfTeams - 2) / 2}(6) is team matches,
+            // { (1 + cutoff) }(7) --- { (1 + cutoff) + _numOfTeams - 1 }(10) is teams
+            // {1 + cutoff + _numOfTeams}(11) is target
+            for (int iii = 1; iii < getTeamComboCutoff(); iii += 1) {
+                flowNetwork.addEdge(new FlowEdge(0, iii, Double.POSITIVE_INFINITY));
+            }
+
+            for (int iii = 1; iii < getTeamComboCutoff(); iii += 1) {
+                flowNetwork.addEdge(new FlowEdge(0, iii, Double.POSITIVE_INFINITY));
+            }
+        }
+    }
+
+    private int getTeamComboCutoff() {
+        return (_numOfTeams - 1) * (_numOfTeams - 2) / 2;
     }
 
     private int getTeamIndex(String teamName) {
         for (int iii = 0; iii < _numOfTeams; iii += 1) {
-            if (this._teams[iii] == teamName) {
+            if (Objects.equals(this._teams[iii], teamName)) {
                 return iii;
             }
         }
