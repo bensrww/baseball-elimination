@@ -79,7 +79,7 @@ public class BaseballElimination {
 
     // number of remaining games between team1 and team2
     public int against(String team1, String team2) {
-        return this._against[getTeamIndex(team1),getTeamIndex(team2)];
+        return this._against[getTeamIndex(team1)][getTeamIndex(team2)];
     }
 
     // is given team eliminated?
