@@ -79,15 +79,16 @@ public class BaseballElimination {
                     }
                     continue;
                 }
+                if (teamRightId == _numOfTeams) {
+                    teamLeftId += 1;
+                    teamRightId = 0;
+                    continue;
+                }
 
                 _nodeMap[teamId][nodeId] = new NodeMap(nodeId, teamLeftId, teamRightId);
 
                 if (teamRightId < _numOfTeams) {
                     teamRightId += 1;
-                }
-                else if (teamRightId == _numOfTeams) {
-                    teamLeftId += 1;
-                    teamRightId = 0;
                 }
                 nodeId += 1;
             }
