@@ -60,6 +60,7 @@ public class BaseballElimination {
             }
         }
 
+        // Construct nodeMap
         for (int teamId = 0; teamId < _numOfTeams; teamId += 1) {
             int teamLeftId = 0;
             int teamRightId = 0;
@@ -108,16 +109,43 @@ public class BaseballElimination {
             FlowNetwork flowNetwork = new FlowNetwork(getMaxNumOfNodes());
 
             for (int iii = 1; iii < getTeamComboCutoff(); iii += 1) {
-                flowNetwork.addEdge(new FlowEdge(0, iii, Double.POSITIVE_INFINITY));
+                int teamLeft = _nodeMap[teamId][iii]._teamLeft;
+                int teamRight = _nodeMap[teamId][iii]._teamRight;
+                flowNetwork.addEdge(new FlowEdge(0, iii, _against[teamLeft][teamRight]));
             }
 
+            // Connect team against to team nodes
             for (int iii = 1; iii < getTeamComboCutoff(); iii += 1) {
-                flowNetwork.addEdge(
-                        new FlowEdge(iii, getTeamComboCutoff() + 1, Double.POSITIVE_INFINITY));
-                flowNetwork.addEdge(
-                        new FlowEdge(iii, getTeamComboCutoff() + 2, Double.POSITIVE_INFINITY));
+                int teamLeft = _nodeMap[teamId][iii]._teamLeft;
+                int teamRight = _nodeMap[teamId][iii]._teamRight;
+                flowNetwork.addEdge(new FlowEdge(iii, getTeamNodeIdInMap(teamId, teamLeft),
+                                                 Double.POSITIVE_INFINITY));
+                flowNetwork.addEdge(new FlowEdge(iii, getTeamNodeIdInMap(teamId, teamRight),
+                                                 Double.POSITIVE_INFINITY));
+            }
+
+            // Connect team nodes to target
+            for (int iii = getTeamComboCutoff() + 1; iii < getMaxNumOfNodes() - 1; iii += 1) {
+                flowNetwork.addEdge(new FlowEdge(iii, getMaxNumOfNodes() - 1, getMaxAllowedWins()));
+            }
+
+            _network[teamId] = flowNetwork;
+            _fordFulkerson[teamId] = new FordFulkerson(flowNetwork, 0, getMaxNumOfNodes() - 1);
+        }
+    }
+
+    private int getMaxAllowedWins() {
+        return 3;
+    }
+
+    private int getTeamNodeIdInMap(int mapId, int targetTeamId) {
+        for (int iii = getTeamComboCutoff() + 1; iii < getMaxNumOfNodes(); iii += 1) {
+            if (_nodeMap[mapId][iii]._teamLeft == targetTeamId
+                    && _nodeMap[mapId][iii]._teamRight == -1) {
+                return iii;
             }
         }
+        return -1;
     }
 
     private int getMaxNumOfNodes() {
