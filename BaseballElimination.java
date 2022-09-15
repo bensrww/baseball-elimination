@@ -69,7 +69,7 @@ public class BaseballElimination {
                 if (teamLeftId >= _numOfTeams) {
                     break;
                 }
-                if (teamLeftId == teamRightId || teamLeftId == teamId || teamRightId == teamId) {
+                if (teamRightId <= teamLeftId || teamLeftId == teamId || teamRightId == teamId) {
                     if (teamRightId < _numOfTeams) {
                         teamRightId += 1;
                     }
@@ -79,17 +79,27 @@ public class BaseballElimination {
                     }
                     continue;
                 }
+                if (teamRightId == _numOfTeams) {
+                    teamLeftId += 1;
+                    teamRightId = 0;
+                    continue;
+                }
 
                 _nodeMap[teamId][nodeId] = new NodeMap(nodeId, teamLeftId, teamRightId);
 
                 if (teamRightId < _numOfTeams) {
                     teamRightId += 1;
                 }
-                else if (teamRightId == _numOfTeams) {
-                    teamLeftId += 1;
-                    teamRightId = 0;
-                }
                 nodeId += 1;
+            }
+
+            for (int teamIdInNode = 0, nodeIdLocal = getTeamComboCutoff() + 1;
+                 nodeIdLocal < getMaxNumOfNodes(); teamIdInNode += 1) {
+                if (teamIdInNode == teamId) {
+                    continue;
+                }
+                _nodeMap[teamId][nodeIdLocal] = new NodeMap(nodeIdLocal, teamIdInNode, -1);
+                nodeIdLocal += 1;
             }
         }
 
@@ -114,7 +124,7 @@ public class BaseballElimination {
         // 0 is source, {1 --- (_numOfTeams - 1 + _numOfTeams - 2) / 2}(6) is team matches,
         // { (1 + cutoff) }(7) --- { (1 + cutoff) + _numOfTeams - 1 }(10) is teams
         // {1 + cutoff + _numOfTeams}(11) is target
-        return 2 + _numOfTeams - 1 + (_numOfTeams - 1 + _numOfTeams - 2) / 2;
+        return 2 + _numOfTeams - 1 + getTeamComboCutoff();
     }
 
     private int getTeamComboCutoff() {
