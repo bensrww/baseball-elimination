@@ -69,7 +69,7 @@ public class BaseballElimination {
                 if (teamLeftId >= _numOfTeams) {
                     break;
                 }
-                if (teamLeftId == teamRightId || teamLeftId == teamId || teamRightId == teamId) {
+                if (teamRightId <= teamLeftId || teamLeftId == teamId || teamRightId == teamId) {
                     if (teamRightId < _numOfTeams) {
                         teamRightId += 1;
                     }
