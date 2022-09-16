@@ -137,7 +137,7 @@ public class BaseballElimination {
     }
 
     private int getMaxAllowedWins(int teamOfInterest, int teamAgainst) {
-        return _wins[teamOfInterest] + _left[teamOfInterest] - _wins[teamAgainst];
+        return Math.max(0, _wins[teamOfInterest] + _left[teamOfInterest] - _wins[teamAgainst]);
     }
 
     private int getTeamNodeIdInMap(int mapId, int targetTeamId) {
@@ -206,12 +206,29 @@ public class BaseballElimination {
 
     // is given team eliminated?
     public boolean isEliminated(String team) {
+        int teamId = getTeamIndex(team);
+        for (int iii = 0; iii < _numOfTeams; iii += 1) {
+            if (iii == teamId) {
+                continue;
+            }
+            if (_wins[teamId] + _left[teamId] < _wins[iii]) {
+                return true;
+            }
+        }
         return false;
     }
 
     // subset R of teams that eliminates given team; null if not eliminated
     public Iterable<String> certificateOfElimination(String team) {
-        return null;
+        if (!isEliminated(team)) return null;
+        Queue<String> q = new Queue<>();
+        for (int iii = 0; iii < _numOfTeams; iii += 1) {
+            int teamNodeId = getTeamComboCutoff() + 1 + iii;
+            if (_fordFulkerson[getTeamIndex(team)].inCut(teamNodeId)) {
+                q.enqueue(_teams[iii]);
+            }
+        }
+        return q;
     }
 
     public static void main(String[] args) {
