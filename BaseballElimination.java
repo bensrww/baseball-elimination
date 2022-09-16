@@ -126,7 +126,9 @@ public class BaseballElimination {
 
             // Connect team nodes to target
             for (int iii = getTeamComboCutoff() + 1; iii < getMaxNumOfNodes() - 1; iii += 1) {
-                flowNetwork.addEdge(new FlowEdge(iii, getMaxNumOfNodes() - 1, getMaxAllowedWins()));
+                flowNetwork.addEdge(new FlowEdge(iii, getMaxNumOfNodes() - 1,
+                                                 getMaxAllowedWins(teamId,
+                                                                   _nodeMap[teamId][iii]._teamLeft)));
             }
 
             _network[teamId] = flowNetwork;
@@ -134,8 +136,8 @@ public class BaseballElimination {
         }
     }
 
-    private int getMaxAllowedWins() {
-        return 3;
+    private int getMaxAllowedWins(int teamOfInterest, int teamAgainst) {
+        return _wins[teamOfInterest] + _left[teamOfInterest] - _wins[teamAgainst];
     }
 
     private int getTeamNodeIdInMap(int mapId, int targetTeamId) {
